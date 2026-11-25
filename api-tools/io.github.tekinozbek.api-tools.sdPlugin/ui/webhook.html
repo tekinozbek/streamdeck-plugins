@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="sdpi-components.js"></script>
+  <style>
+    :root {
+      --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+    }
+    body { padding-bottom: 14px; font-family: var(--font); }
+
+    .section { margin: 18px 0 8px; padding: 0 4px; }
+    .section:first-child { margin-top: 6px; }
+    .section h3 {
+      margin: 0; padding-bottom: 6px;
+      font: 600 11px/1 var(--font);
+      letter-spacing: .09em; text-transform: uppercase;
+      color: #8f8f8f; border-bottom: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    /* Help panel */
+    .help {
+      margin: 20px 4px 0;
+      border: 1px solid rgba(255, 255, 255, .1); border-radius: 8px;
+      background: rgba(255, 255, 255, .035);
+      font: 13px/1.55 var(--font); color: #c9c9c9;
+    }
+    .help > summary {
+      padding: 10px 12px; cursor: pointer; list-style-position: inside;
+      font: 600 13px/1.2 var(--font); color: #ececec;
+    }
+    .help > .body { padding: 0 8px 8px; }
+
+    /* One collapsible topic per subject */
+    .topic { border-top: 1px solid rgba(255, 255, 255, .08); }
+    .topic > summary {
+      padding: 9px 4px; cursor: pointer; list-style-position: inside;
+      font: 600 12px/1.2 var(--font); letter-spacing: .06em; text-transform: uppercase;
+      color: #b5b5b5;
+    }
+    .topic[open] > summary { color: #ececec; }
+    .topic > .content { padding: 0 4px 10px; }
+
+    .help .sub {
+      margin: 12px 0 4px; font: 600 11px/1 var(--font);
+      letter-spacing: .06em; text-transform: uppercase; color: #8f8f8f;
+    }
+    .help .sub:first-child { margin-top: 2px; }
+    .help table { width: 100%; border-collapse: collapse; }
+    .help td { padding: 5px 0; vertical-align: top; border-top: 1px solid rgba(255, 255, 255, .06); }
+    .help tr:first-child td { border-top: 0; }
+    .help td:first-child { width: 56%; padding-right: 10px; }
+    .help td:last-child { color: #a8a8a8; }
+    .help p { margin: 6px 0; }
+    .help ul { margin: 6px 0; padding-left: 18px; }
+    .help li { margin: 3px 0; }
+    .help code {
+      font: 12px/1.4 var(--mono); color: #f0f0f0;
+      background: rgba(255, 255, 255, .1); padding: 2px 6px; border-radius: 4px;
+      word-break: break-all;
+    }
+    .help .chips code { display: inline-block; margin: 0 4px 6px 0; }
+  </style>
+</head>
+<body>
+  <div class="section"><h3>Request</h3></div>
+  <sdpi-item label="URL">
+    <sdpi-textfield setting="url" placeholder="https://example.com/hook" required></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Method">
+    <sdpi-select setting="method" default="POST">
+      <option>GET</option><option>HEAD</option><option>POST</option><option>PUT</option>
+      <option>PATCH</option><option>DELETE</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Headers">
+    <sdpi-textarea setting="headers" rows="3"
+      data-placeholder="One per line, e.g.&#10;Authorization: Bearer &lt;token&gt;&#10;X-Api-Key: abc123"></sdpi-textarea>
+  </sdpi-item>
+  <sdpi-item label="Body">
+    <sdpi-textarea setting="body" rows="4"
+      data-placeholder="e.g. {&quot;hello&quot;: &quot;world&quot;}&#10;Sent as application/json when valid JSON. Ignored for GET / HEAD."></sdpi-textarea>
+  </sdpi-item>
+  <sdpi-item label="Timeout (s)">
+    <sdpi-textfield setting="timeout" default="10" pattern="^[0-9]+$" placeholder="1-120, empty = 10"></sdpi-textfield>
+  </sdpi-item>
+
+  <div class="section"><h3>Polling</h3></div>
+  <sdpi-item label="Every (ms)">
+    <sdpi-textfield setting="pollMs" default="0" pattern="^[0-9]+$" placeholder="0 = off (min 250, GET/HEAD only)"></sdpi-textfield>
+  </sdpi-item>
+
+  <div class="section"><h3>Button press</h3></div>
+  <sdpi-item label="Behavior">
+    <sdpi-select setting="onPress" default="refresh">
+      <option value="refresh">Refresh (call the API)</option>
+      <option value="url">Open URL in browser</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="URL to open">
+    <sdpi-textarea setting="openUrl" rows="4"
+      data-placeholder="e.g. https://example.com/?tz={tz}&#10;Used when Behavior is &quot;Open URL&quot;. {tz} is filled from the API response (URL-encoded); {!url} inserts a value as-is."></sdpi-textarea>
+  </sdpi-item>
+
+  <div class="section"><h3>Display</h3></div>
+  <sdpi-item label="Expression">
+    <sdpi-textfield setting="jsonPath" placeholder="{time.hour}:{pad({time.minute}, 2)}"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Prefix">
+    <sdpi-textfield setting="prefix" placeholder="CPU\n"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Suffix">
+    <sdpi-textfield setting="suffix" placeholder="°C"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Icon">
+    <sdpi-textfield setting="iconPath" placeholder="status.iconSvg"></sdpi-textfield>
+  </sdpi-item>
+
+  <details class="help">
+    <summary>Help</summary>
+    <div class="body">
+
+      <p><b>Test with a harmless endpoint first.</b> Each press (and each poll) sends a real request.</p>
+
+      <details class="topic">
+        <summary>Expressions</summary>
+        <div class="content">
+          <p>Used by <b>Expression</b>, <b>Icon</b> and <b>URL to open</b>. They read values from the JSON the API returns.</p>
+          <table>
+            <tr><td><code>data.items[0].count</code></td><td>plain path</td></tr>
+            <tr><td><code>{cpu.name}: {cpu.temp}</code></td><td>join values</td></tr>
+            <tr><td><code>={a} + {b}</code></td><td>maths: <code>+ - * / %</code> and <code>( )</code>. After <code>=</code>, functions go outside the braces: <code>=round({a}, 2)</code></td></tr>
+            <tr><td><code>{time.hour}:{pad({time.minute}, 2)}</code></td><td>functions inside <code>{}</code></td></tr>
+            <tr><td><code>{name}[0:5]</code> <code>{name}[:-1]</code> <code>{name}[-1]</code></td><td>Python-style slice / index</td></tr>
+            <tr><td><code>={t}[0:2] * 60</code></td><td>numeric text converts automatically</td></tr>
+          </table>
+
+          <div class="sub">Functions</div>
+          <div class="chips">
+            <code>round(x, digits)</code> <code>fixed(x, digits)</code> <code>floor(x)</code> <code>ceil(x)</code>
+            <code>abs(x)</code> <code>min(…)</code> <code>max(…)</code> <code>pad(x, width, char)</code>
+          </div>
+          <p><code>fixed(x, 1)</code> always shows the decimals (5 → 5.0). Halves round away from zero.</p>
+
+          <div class="sub">Rules</div>
+          <ul>
+            <li>Text with no <code>{}</code> and no leading <code>=</code> is read as a path. Use <code>{…}</code> for literal text.</li>
+            <li><code>+</code> adds numeric-looking text (<code>"1"+"2"</code> = 3). Join with <code>{a}{b}</code> instead.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Display</summary>
+        <div class="content">
+          <ul>
+            <li>The key shows <b>Prefix</b> + the <b>Expression</b> result + <b>Suffix</b>.</li>
+            <li><code>\n</code> = new line, in Expression, Prefix and Suffix (e.g. <code>{name}\n{temp}°C</code>).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Icon</summary>
+        <div class="content">
+          <p>An expression that returns an image from the response JSON:</p>
+          <ul>
+            <li><b>SVG</b> markup, or a <code>data:image/svg+xml</code> URI (max 256 KB). Scripts and animation are refused, as are <code>&lt;use&gt;</code> references that loop or multiply without limit.</li>
+            <li><b>PNG</b> (also JPEG, GIF, WebP) as a <code>data:image/png;base64,…</code> URI or bare base64 (max 512 KB).</li>
+            <li>Empty or missing value: the default icon is restored.</li>
+            <li>Unusable image: a red <code>BAD ICON</code> tile is shown.</li>
+            <li>SVG: scripts, <code>foreignObject</code>, event handlers and external links are blocked. Give it a <code>viewBox</code> so it scales.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Open URL on press</summary>
+        <div class="content">
+          <p>With <b>Behavior → Open URL in browser</b>, pressing the key opens the URL in your default browser. Only <code>http</code> and <code>https</code> are allowed.</p>
+          <table>
+            <tr><td><code>https://example.com/?tz={tz}</code></td><td>value from the API response, URL-encoded</td></tr>
+            <tr><td><code>{!url}</code></td><td>inserted as-is (e.g. the API returns a full URL)</td></tr>
+            <tr><td><code>https://e.com/{pad({n}, 3)}</code></td><td>functions and slices work too</td></tr>
+          </table>
+          <p>While polling, the latest response is used. Otherwise the API is called first, using the Request settings. A missing value anywhere in the URL (even inside a function) cancels the open. A URL with no <code>{}</code> opens immediately.</p>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Timeout and redirects</summary>
+        <div class="content">
+          <ul>
+            <li><b>Timeout (s)</b>: 1 to 120 seconds. Empty or <code>0</code> = 10 s; above 120 counts as 120.</li>
+            <li>Redirects are never followed, so your headers, body and query string can't be sent anywhere else. If the API answers with a redirect the key shows <code>REDIRECT</code>; use the final URL instead.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Polling</summary>
+        <div class="content">
+          <ul>
+            <li><b>Every (ms)</b>: <code>0</code> = off. Minimum 250. GET and HEAD only.</li>
+            <li>A request waits at most max(3 s, 3× the interval) before the next try, even if Timeout is longer.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Errors on the key</summary>
+        <div class="content">
+          <table>
+            <tr><td><code>HTTP 404</code></td><td>the API answered with that status</td></tr>
+            <tr><td><code>TIMEOUT</code> / <code>NO CONN</code></td><td>no answer in time / could not connect</td></tr>
+            <tr><td><code>REDIRECT</code></td><td>the API answered with a redirect (not followed)</td></tr>
+            <tr><td><code>BAD JSON</code></td><td>response is not JSON (needed by the expression, icon or URL)</td></tr>
+            <tr><td><code>TOO BIG</code></td><td>response over 1 MiB</td></tr>
+            <tr><td><code>ERR</code></td><td>the expression failed</td></tr>
+          </table>
+          <p>With an Icon set, the error is drawn as a red tile that replaces the icon. Otherwise it is shown as the title. It clears on the next successful call.</p>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Privacy</summary>
+        <div class="content">
+          <p>URL, headers and body are saved as plain text in your Stream Deck profile and are included if you export or share it. Remove tokens first.</p>
+        </div>
+      </details>
+
+    </div>
+  </details>
+
+  <script>
+    // sdpi-textarea has no placeholder support, so copy data-placeholder onto its inner <textarea>.
+    customElements.whenDefined("sdpi-textarea").then(() => {
+      document.querySelectorAll("sdpi-textarea[data-placeholder]").forEach(async (el) => {
+        await el.updateComplete;
+        const ta = el.shadowRoot && el.shadowRoot.querySelector("textarea");
+        if (ta) ta.placeholder = el.dataset.placeholder;
+      });
+    });
+  </script>
+</body>
+</html>

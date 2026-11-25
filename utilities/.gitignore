@@ -1,0 +1,7 @@
+node_modules/
+*.streamDeckPlugin
+io.github.tekinozbek.utilities.sdPlugin/bin/
+io.github.tekinozbek.utilities.sdPlugin/logs/
+.tools/
+# copied from the repository root by the build
+io.github.tekinozbek.utilities.sdPlugin/THIRD-PARTY-NOTICES.md

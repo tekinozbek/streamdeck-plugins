@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="sdpi-components.js"></script>
+  <style>
+    .hint {
+      margin: 12px 8px 0;
+      font: 12px/1.5 "Segoe UI", system-ui, -apple-system, Arial, sans-serif; color: #9a9a9a;
+    }
+  </style>
+</head>
+<body>
+  <sdpi-item label="Prefix">
+    <sdpi-textfield setting="prefix" placeholder="e.g. Ottawa (optional)"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Time zone">
+    <sdpi-select setting="timeZone" datasource="getTimeZones" default="local" loading="Loading time zones..."></sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Format">
+    <sdpi-select setting="timeFormat" default="24">
+      <option value="24">24-hour, HH:mm</option>
+      <option value="24s">24-hour, HH:mm:ss</option>
+      <option value="12">12-hour, HH:mm am/pm</option>
+      <option value="12s">12-hour, HH:mm:ss am/pm</option>
+    </sdpi-select>
+  </sdpi-item>
+  <p class="hint">
+    Style the text with the <b>T</b> menu next to Stream Deck's Title box. Leave that box empty: anything typed
+    there covers the clock. For Ottawa, pick America &rarr; Toronto.
+  </p>
+</body>
+</html>

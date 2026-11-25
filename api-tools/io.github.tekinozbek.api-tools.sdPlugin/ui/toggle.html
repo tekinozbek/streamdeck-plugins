@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="sdpi-components.js"></script>
+  <style>
+    :root {
+      --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+    }
+    body { padding-bottom: 14px; font-family: var(--font); }
+
+    .section { margin: 18px 0 8px; padding: 0 4px; }
+    .section:first-child { margin-top: 6px; }
+    .section h3 {
+      margin: 0; padding-bottom: 6px;
+      font: 600 11px/1 var(--font);
+      letter-spacing: .09em; text-transform: uppercase;
+      color: #8f8f8f; border-bottom: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    /* Help panel */
+    .help {
+      margin: 20px 4px 0;
+      border: 1px solid rgba(255, 255, 255, .1); border-radius: 8px;
+      background: rgba(255, 255, 255, .035);
+      font: 13px/1.55 var(--font); color: #c9c9c9;
+    }
+    .help > summary {
+      padding: 10px 12px; cursor: pointer; list-style-position: inside;
+      font: 600 13px/1.2 var(--font); color: #ececec;
+    }
+    .help > .body { padding: 0 8px 8px; }
+
+    /* One collapsible topic per subject */
+    .topic { border-top: 1px solid rgba(255, 255, 255, .08); }
+    .topic > summary {
+      padding: 9px 4px; cursor: pointer; list-style-position: inside;
+      font: 600 12px/1.2 var(--font); letter-spacing: .06em; text-transform: uppercase;
+      color: #b5b5b5;
+    }
+    .topic[open] > summary { color: #ececec; }
+    .topic > .content { padding: 0 4px 10px; }
+
+    .help table { width: 100%; border-collapse: collapse; }
+    .help td { padding: 5px 0; vertical-align: top; border-top: 1px solid rgba(255, 255, 255, .06); }
+    .help tr:first-child td { border-top: 0; }
+    .help td:first-child { width: 42%; padding-right: 10px; }
+    .help td:last-child { color: #a8a8a8; }
+    .help p { margin: 6px 0; }
+    .help ul { margin: 6px 0; padding-left: 18px; }
+    .help li { margin: 3px 0; }
+    .help code {
+      font: 12px/1.4 var(--mono); color: #f0f0f0;
+      background: rgba(255, 255, 255, .1); padding: 2px 6px; border-radius: 4px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="section"><h3>Status (polled)</h3></div>
+  <sdpi-item label="URL">
+    <sdpi-textfield setting="statusUrl" placeholder="https://example.com/api/status" required></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Headers">
+    <sdpi-textarea setting="statusHeaders" rows="3"
+      data-placeholder="One per line, e.g.&#10;Authorization: Bearer &lt;token&gt;&#10;The status request is always a GET."></sdpi-textarea>
+  </sdpi-item>
+  <sdpi-item label="Every (ms)">
+    <sdpi-textfield setting="pollMs" default="1000" pattern="^[0-9]+$" placeholder="min 250, empty = 1000"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Timeout (s)">
+    <sdpi-textfield setting="timeout" default="10" pattern="^[0-9]+$" placeholder="1-120, empty = 10"></sdpi-textfield>
+  </sdpi-item>
+
+  <div class="section"><h3>State</h3></div>
+  <sdpi-item label="Expression">
+    <sdpi-textfield setting="stateExpr" placeholder="data.power  (empty = whole response)"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="On when equals">
+    <sdpi-textfield setting="onWhen" placeholder="empty = true / on / 1 / yes"></sdpi-textfield>
+  </sdpi-item>
+
+  <div class="section"><h3>Icons (optional)</h3></div>
+  <sdpi-item label="Off icon from">
+    <sdpi-select setting="offIconSource" default="default">
+      <option value="default">Default</option>
+      <option value="file">File on disk</option>
+      <option value="response">Status response</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Off icon">
+    <sdpi-textfield setting="offIcon" placeholder="full file path  or  status.offIcon"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="On icon from">
+    <sdpi-select setting="onIconSource" default="default">
+      <option value="default">Default</option>
+      <option value="file">File on disk</option>
+      <option value="response">Status response</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="On icon">
+    <sdpi-textfield setting="onIcon" placeholder="full file path  or  status.onIcon"></sdpi-textfield>
+  </sdpi-item>
+
+  <div class="section"><h3>Press while OFF (turn on)</h3></div>
+  <sdpi-item label="URL">
+    <sdpi-textfield setting="onUrl" placeholder="https://example.com/api/on"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Method">
+    <sdpi-select setting="onMethod" default="POST">
+      <option>GET</option><option>HEAD</option><option>POST</option><option>PUT</option>
+      <option>PATCH</option><option>DELETE</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Headers">
+    <sdpi-textarea setting="onHeaders" rows="2" data-placeholder="One per line, e.g. Authorization: Bearer &lt;token&gt;"></sdpi-textarea>
+  </sdpi-item>
+  <sdpi-item label="Body">
+    <sdpi-textarea setting="onBody" rows="3"
+      data-placeholder="e.g. {&quot;power&quot;: true}&#10;Sent as application/json when valid JSON. Ignored for GET / HEAD."></sdpi-textarea>
+  </sdpi-item>
+
+  <div class="section"><h3>Press while ON (turn off)</h3></div>
+  <sdpi-item label="URL">
+    <sdpi-textfield setting="offUrl" placeholder="https://example.com/api/off"></sdpi-textfield>
+  </sdpi-item>
+  <sdpi-item label="Method">
+    <sdpi-select setting="offMethod" default="POST">
+      <option>GET</option><option>HEAD</option><option>POST</option><option>PUT</option>
+      <option>PATCH</option><option>DELETE</option>
+    </sdpi-select>
+  </sdpi-item>
+  <sdpi-item label="Headers">
+    <sdpi-textarea setting="offHeaders" rows="2" data-placeholder="One per line, e.g. Authorization: Bearer &lt;token&gt;"></sdpi-textarea>
+  </sdpi-item>
+  <sdpi-item label="Body">
+    <sdpi-textarea setting="offBody" rows="3"
+      data-placeholder="e.g. {&quot;power&quot;: false}&#10;Sent as application/json when valid JSON. Ignored for GET / HEAD."></sdpi-textarea>
+  </sdpi-item>
+
+  <details class="help">
+    <summary>Help</summary>
+    <div class="body">
+
+      <p><b>Test with a harmless endpoint first.</b> Each press (and each poll) sends a real request.</p>
+
+      <details class="topic">
+        <summary>How it works</summary>
+        <div class="content">
+          <ul>
+            <li>The key asks the <b>Status</b> URL (GET) every <b>Every (ms)</b> and shows <b>On</b> or <b>Off</b> from the answer. It never flips on its own.</li>
+            <li>Pressing while Off calls the <b>On</b> request; pressing while On calls the <b>Off</b> request. Then the key checks the status again and shows what the API reports.</li>
+            <li>Polling pauses while a press is being sent. A second press during that time is ignored.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>State rules</summary>
+        <div class="content">
+          <p>The <b>Expression</b> reads a value from the status JSON (same syntax as the Webhook action, e.g. <code>data.power</code>). Leave it empty to use the whole response text, such as a plain <code>on</code> or <code>off</code>.</p>
+          <table>
+            <tr><td><b>On when equals</b> empty</td><td><code>true</code>, <code>on</code>, <code>1</code>, <code>yes</code> (any case) = on. Anything else = off.</td></tr>
+            <tr><td><b>On when equals</b> set</td><td>Only that exact value (any case) = on. Everything else = off. The defaults no longer apply.</td></tr>
+            <tr><td>No value at all</td><td>Shows <code>NO VALUE</code> instead of guessing.</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Custom icons</summary>
+        <div class="content">
+          <p>Each state can use its own image instead of the default one. Choose where it comes from, then fill in the field next to it.</p>
+          <table>
+            <tr><td><b>File on disk</b></td><td>The full path to a local <code>.svg</code>, <code>.png</code>, <code>.jpg</code>, <code>.gif</code> or <code>.webp</code> file, e.g. <code>C:\icons\on.svg</code> or <code>/Users/you/icons/on.svg</code>. Network (<code>\\server\…</code>) paths are not allowed. Changes to the file show up on the next poll.</td></tr>
+            <tr><td><b>Status response</b></td><td>An expression on the status JSON that returns an image: SVG markup, or a <code>data:image/…;base64,…</code> URI (same as the Webhook action's Icon).</td></tr>
+          </table>
+          <ul>
+            <li>SVGs up to 256 KB and other images up to 512 KB. Scripts, external links and similar content are blocked in SVGs.</li>
+            <li>If the file is missing, or the response has no usable image, the default icon is used and the reason is written to the log.</li>
+            <li>The question mark for an unknown state and the warning for a failed poll can't be changed.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>What the key shows</summary>
+        <div class="content">
+          <table>
+            <tr><td>Square</td><td>Off</td></tr>
+            <tr><td>Check square</td><td>On</td></tr>
+            <tr><td>Question mark</td><td>State not known yet (before the first successful poll, or no status URL)</td></tr>
+            <tr><td>Warning</td><td>The last poll failed. The reason is the title, and it clears on the next success.</td></tr>
+          </table>
+          <p>Titles: <code>HTTP 500</code>, <code>TIMEOUT</code>, <code>NO CONN</code>, <code>REDIRECT</code>, <code>BAD JSON</code>, <code>TOO BIG</code>, <code>ERR</code> (expression failed), <code>NO VALUE</code>.</p>
+          <p>A press alerts if the key never learned its state, if the needed On/Off URL is empty, or if the request failed. After a warning the key still remembers the last known state, so a press works while the API is flaky.</p>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Timeout, polling and redirects</summary>
+        <div class="content">
+          <ul>
+            <li><b>Timeout (s)</b>: 1 to 120 seconds, used by all three requests. Empty or <code>0</code> = 10 s.</li>
+            <li><b>Every (ms)</b>: minimum 250. While polling, a request waits at most max(3 s, 3× the interval).</li>
+            <li>Redirects are never followed, so your headers, body and query string can't be sent anywhere else. Use the final URL instead.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="topic">
+        <summary>Privacy</summary>
+        <div class="content">
+          <p>URLs, headers and bodies are saved as plain text in your Stream Deck profile and are included if you export or share it. Remove tokens first.</p>
+        </div>
+      </details>
+
+    </div>
+  </details>
+
+  <script>
+    // sdpi-textarea has no placeholder support, so copy data-placeholder onto its inner <textarea>.
+    customElements.whenDefined("sdpi-textarea").then(() => {
+      document.querySelectorAll("sdpi-textarea[data-placeholder]").forEach(async (el) => {
+        await el.updateComplete;
+        const ta = el.shadowRoot && el.shadowRoot.querySelector("textarea");
+        if (ta) ta.placeholder = el.dataset.placeholder;
+      });
+    });
+  </script>
+</body>
+</html>

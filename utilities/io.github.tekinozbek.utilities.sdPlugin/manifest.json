@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Name": "Utilities",
+  "Version": "1.0.0.0",
+  "Author": "Tekin's Plugins",
+  "Category": "Utilities",
+  "CategoryIcon": "imgs/category-icon",
+  "URL": "https://github.com/tekinozbek",
+  "UUID": "io.github.tekinozbek.utilities",
+  "Description": "Small handy keys, starting with a plain-text clock for any time zone.",
+  "Icon": "imgs/plugin-icon",
+  "CodePath": "bin/plugin.js",
+  "SDKVersion": 3,
+  "Nodejs": {
+    "Version": "20"
+  },
+  "Software": {
+    "MinimumVersion": "6.9"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "12"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Actions": [
+    {
+      "Name": "Simple Clock",
+      "UUID": "io.github.tekinozbek.utilities.clock",
+      "Icon": "imgs/actions/clock/icon",
+      "Tooltip": "Show the time in any time zone, with an optional prefix.",
+      "PropertyInspectorPath": "ui/clock.html",
+      "SupportedInMultiActions": false,
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/clock/key",
+          "TitleAlignment": "middle",
+          "FontSize": 16
+        }
+      ]
+    }
+  ]
+}

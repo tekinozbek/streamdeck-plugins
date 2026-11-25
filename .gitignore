@@ -1,0 +1,16 @@
+# Built and packaged plugins
+*.sdPlugin/bin/
+*.streamDeckPlugin
+dist/
+
+# Local tools, dependencies and runtime output
+node_modules/
+.tools/
+.venv/
+__pycache__/
+logs/
+*.log
+
+# Local-only files
+.env
+.claude/settings.local.json

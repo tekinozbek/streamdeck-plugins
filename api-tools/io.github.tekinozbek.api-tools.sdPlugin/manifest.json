@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Name": "API Tools",
+  "Version": "1.0.0.0",
+  "Author": "Tekin's Plugins",
+  "Category": "API Tools",
+  "CategoryIcon": "imgs/category-icon",
+  "URL": "https://github.com/tekinozbek",
+  "UUID": "io.github.tekinozbek.api-tools",
+  "Description": "Send HTTP requests and poll JSON from a key.",
+  "Icon": "imgs/plugin-icon",
+  "CodePath": "bin/plugin.js",
+  "SDKVersion": 3,
+  "Nodejs": {
+    "Version": "20"
+  },
+  "Software": {
+    "MinimumVersion": "6.9"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "12"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Actions": [
+    {
+      "Name": "Webhook",
+      "UUID": "io.github.tekinozbek.api-tools.call",
+      "Icon": "imgs/actions/webhook/icon",
+      "Tooltip": "Send an HTTP request.",
+      "PropertyInspectorPath": "ui/webhook.html",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/actions/webhook/key",
+          "TitleAlignment": "middle"
+        }
+      ]
+    },
+    {
+      "Name": "API Toggle",
+      "UUID": "io.github.tekinozbek.api-tools.toggle",
+      "Icon": "imgs/actions/toggle/icon",
+      "Tooltip": "A key whose on/off state follows an API. Polls a status endpoint; a press calls the On or Off endpoint.",
+      "PropertyInspectorPath": "ui/toggle.html",
+      "DisableAutomaticStates": true,
+      "SupportedInMultiActions": false,
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Name": "Off",
+          "Image": "imgs/actions/toggle/off",
+          "TitleAlignment": "middle"
+        },
+        {
+          "Name": "On",
+          "Image": "imgs/actions/toggle/on",
+          "TitleAlignment": "middle"
+        }
+      ]
+    }
+  ]
+}
